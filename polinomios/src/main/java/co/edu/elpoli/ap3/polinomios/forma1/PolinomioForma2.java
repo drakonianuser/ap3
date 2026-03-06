@@ -34,7 +34,8 @@ public class PolinomioForma2 {
     }
 
     public void llenarPolinomio(String[] vs){
-        for (int i = 0; i <= vs.length; i++) {
+        for (int i = 0; i < vs.length; i++) {
+            if (vs[i] == null || vs[i].isBlank()) break;
             this.setVPF2(i+1,Integer.parseInt(vs[i]));
         }
     }
@@ -69,6 +70,20 @@ public class PolinomioForma2 {
         Du += 2;
     }
 
+    public void eliminarTermino(int exp) {
+        for (int j = 2; j <= Du; j += 2) {
+            if (VPF2[j] == exp) {
+                int[] nuevo = new int[Du - 1];
+                nuevo[0] = VPF2[0] - 1;
+                System.arraycopy(VPF2, 1, nuevo, 1, j - 2);
+                System.arraycopy(VPF2, j + 1, nuevo, j - 1, Du - j);
+                VPF2 = nuevo;
+                Du -= 2;
+                return;
+            }
+        }
+    }
+
     public PolinomioForma2 sumarPolinomiof2(PolinomioForma2 polinomioForma2) {
         PolinomioForma2 aux = new PolinomioForma2(VPF2[0]);
         aux.setVPF2(this.VPF2);
@@ -77,5 +92,46 @@ public class PolinomioForma2 {
         }
         return aux;
     }
+    
+    public PolinomioForma1 sumarConFormaTres(PolinomioForma3 f3){
+        int i =2 , pos , mayor;
+        Nodo p = f3.getCabeza();
+        mayor = Math.max(getVPF2(i),p.getExp());
+        PolinomioForma1 f1 = new PolinomioForma1(mayor);
+        while (i<=getDu() && p != null){
+            if (getVPF2(i)==p.getExp()){
+                pos = f1.getDu()- getVPF2(i);
+                f1.setVPF1(pos,getVPF2(i-1)+ p.getCoe());
+                i+= 2;
+                p = p.getLiga();
+            }else {
+                if (getVPF2(i)>p.getExp()){
+                    pos= f1.getDu() - getVPF2(i);
+                    f1.setVPF1(pos, getVPF2(i-1));
+                    i += 2;
+                } else {
+                    pos= f1.getDu() - p.getExp();
+                    f1.setVPF1(pos, p.getCoe());
+                    p = p.getLiga();
+                }
+            }
+        }
+        while (i <= getDu()) {
+            pos = f1.getDu() - getVPF2(i);
+            f1.setVPF1(pos, getVPF2(i - 1));
+            i += 2;
+        }
+        while (p != null) {
+            pos = f1.getDu() - p.getExp();
+            f1.setVPF1(pos, p.getCoe());
+            p = p.getLiga();
+        }
+        System.out.println("forma1");
+        for (int j = 0; j <= f1.getDu(); j++) {
+            System.out.print("|"+f1.getVPF1(j)+"|");
+        }
+        return f1;
+    }
+            
 
 }
